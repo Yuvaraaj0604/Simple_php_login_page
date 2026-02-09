@@ -19,7 +19,8 @@ function generateJWT(array $user): string
         'iat' => time(),
         'exp' => time() + (int) $expiry,
         'uid' => $user['id'],
-        'email' => $user['email']
+        'email' => $user['email'],
+        'name' => $user['username'] ?? $user['email'] ?? 'User'
     ];
 
     // ✅ PASS SECRET STRING DIRECTLY

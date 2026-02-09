@@ -7,30 +7,31 @@ use CodeIgniter\RESTful\ResourceController;
 
 class UserController extends ResourceController
 {
-public function create()
-{
-    $data = $this->request->getJSON(true);
+    public function create()
+    {
+        $data = $this->request->getJSON(true);
 
-    if (!$data) {
+        if (!$data) {
+            return $this->response->setJSON([
+                'error' => 'Invalid JSON'
+            ])->setStatusCode(400);
+        }
+
+        $model = new UserModel();
+
+        // Store name in username field (since 'name' column doesn't exist in DB yet)
+        $model->insert([
+            'username' => $data['name'] ?? $data['username'] ?? null,
+            'email' => $data['email'],
+            'password' => password_hash($data['password'], PASSWORD_DEFAULT),
+        ]);
+
         return $this->response->setJSON([
-            'error' => 'Invalid JSON'
-        ])->setStatusCode(400);
+            'status' => true,
+            'message' => 'User created successfully'
+        ]);
     }
-
-    $model = new \App\Models\UserModel();
-
-    $model->insert([
-        'name'     => $data['name'],     
-        'email'    => $data['email'],
-        'password' => password_hash($data['password'], PASSWORD_DEFAULT),
-    ]);
-
-    return $this->response->setJSON([
-        'status' => true,
-        'message' => 'User created successfully'
-    ]);
-}
-public function login()
+    public function login()
     {
         $data = $this->request->getJSON(true);
 
@@ -60,9 +61,17 @@ public function login()
         ]);
     }
     public function loginPage()
-{
-    return view('Login_page');
-}
+    {
+        return view('Login_page');
+    }
 
+    public function registerPage()
+    {
+        return view('Register_page');
+    }
 
+    public function welcomePage()
+    {
+        return view('Welcome_page');
+    }
 }
